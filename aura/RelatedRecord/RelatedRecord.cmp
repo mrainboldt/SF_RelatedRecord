@@ -1,0 +1,88 @@
+<aura:component access="GLOBAL" 
+				controller="LightningController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName">
+	<!--ATTRIBUTES-->
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="error" type="String" />
+    <aura:attribute name="sourceRecord" type="Object" />
+    <aura:attribute name="relatedRecordObjectName" type="String" />
+    <aura:attribute name="sourceField" type="String" />
+    <aura:attribute name="targetField" type="String" />
+    <aura:attribute name="whereClause" type="String" />
+    <aura:attribute name="layoutName" type="String" />
+    <aura:attribute name="relatedRecordId" type="Id" />
+    <aura:attribute name="relatedRecord" type="Object" />
+    <aura:attribute name="relatedRecordError" type="String" />
+    <aura:attribute name="fieldSections" type="Object[]" />
+    <aura:attribute name="fieldSets" type="String" />
+    <aura:attribute name="messages" type="Object[]" />
+    <aura:attribute name="columns" type="String" />
+    <force:recordData aura:id="sourceRecordData"
+        recordId="{!v.recordId}"
+        layoutType="FULL"
+        mode="VIEW"
+        targetRecord="{!v.sourceRecord}"
+        recordUpdated="{!c.handleRecordUpdated}"
+        />
+    <force:recordData aura:id="relatedRecordData"
+    	recordId="{!v.relatedRecordId}"
+        layoutType="FULL"
+        mode="VIEW"
+        targetRecord="{!v.relatedRecord}"
+        targetError="{!v.relatedRecordError}"
+        recordUpdated="{!c.handleRecordUpdated}"
+        />
+
+    <!--HANDLERS-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/> 
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+
+    <!--HTML-->
+    <div id="messages">
+        <aura:if isTrue="{!not(empty(v.messages))}">
+            <aura:iteration items="{!v.messages}" var="msg">
+                 <ui:message title="{!msg.title}" severity="{!msg.severity}" closable="{!msg.closable}">
+                    {!msg.message}
+                 </ui:message>
+            </aura:iteration>
+        </aura:if>
+    </div>
+    <div id="cmpBody">
+        <!-- Display a header with details about the record -->
+        <aura:if isTrue="{!not(empty(v.relatedRecordId))}">
+            <lightning:recordViewForm recordId="{!v.relatedRecordId}" objectApiName="{!v.relatedRecordObjectName}">
+                <lightning:accordion >
+                   <aura:iteration items="{!v.fieldSections}" var="fs">
+                        <lightning:accordionSection label="{!fs.label}" name="{!fs.label}">
+                            <div class="slds-grid slds-wrap">
+                                <aura:iteration items="{!fs.fields}" var="f">
+                                    <div class="{!'slds-col slds-size_1-of-' + v.columns}">
+                                        <lightning:outputField fieldName="{!f.fieldPath}" />
+                                    </div>
+                                </aura:iteration>
+                            </div>
+                        </lightning:accordionSection>
+                    </aura:iteration>
+                </lightning:accordion>
+            </lightning:recordViewForm>
+            <aura:set attribute="else">
+                <div>No record to display.</div>
+            </aura:set>
+        </aura:if>
+
+        <!-- Display Lightning Data Service errors, if any -->
+        <aura:if isTrue="{!not(empty(v.relatedRecordError))}">
+            <div class="recordError">
+                <ui:message title="Error" severity="error" closable="true">
+                    {!v.relatedRecordError}
+                </ui:message>
+            </div>
+        </aura:if>
+    </div>
+    
+    <div id="spinner" style="display:none;">
+        <lightning:spinner />
+    </div>
+</aura:component>

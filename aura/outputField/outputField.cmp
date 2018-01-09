@@ -1,0 +1,17 @@
+<aura:component access="global">
+
+    <aura:attribute access="global" name="type" type="String" required="true" default="STRING" 
+                    description="Data type of the field which is the string value of Schema.DisplayType"/>
+    <aura:attribute access="global" name="value" type="Object" required="true"
+                    description="Value of the field"/>
+    <aura:attribute access="global" name="label" type="String" required="false"
+                    description="Label for URL fields"/>
+    <aura:attribute access="global" name="class" type="String" required="false"
+                    description="CSS style class for the field"/>
+    <aura:attribute access="global" name="record" type="Object" required="true"/>
+    <aura:attribute access="global" name="field" type="String" required="true"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    {!v.body}
+
+</aura:component>
